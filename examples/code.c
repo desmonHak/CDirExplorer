@@ -1,39 +1,35 @@
-/*
- *	Licencia Apache, Versión 2.0 con Modificación
- *	
- *	Copyright 2023 Desmon (David)
- *	
- *	Se concede permiso, de forma gratuita, a cualquier persona que obtenga una copia de 
- *	este software y archivos de documentación asociados (el "Software"), para tratar el 
- *	Software sin restricciones, incluidos, entre otros, los derechos de uso, copia, 
- *	modificación, fusión, publicación, distribución, sublicencia y/o venta de copias del 
- *	Software, y para permitir a las personas a quienes se les proporcione el Software 
- *	hacer lo mismo, sujeto a las siguientes condiciones:
- *	
- *	El anterior aviso de copyright y este aviso de permiso se incluirán en todas las 
- *	copias o partes sustanciales del Software.
- *	
- *	EL SOFTWARE SE PROPORCIONA "TAL CUAL", SIN GARANTÍA DE NINGÚN TIPO, EXPRESA O 
- *	IMPLÍCITA, INCLUYENDO PERO NO LIMITADO A LAS GARANTÍAS DE COMERCIABILIDAD, IDONEIDAD 
- *	PARA UN PROPÓSITO PARTICULAR Y NO INFRACCIÓN. EN NINGÚN CASO LOS TITULARES DEL 
- *	COPYRIGHT O LOS TITULARES DE LOS DERECHOS DE AUTOR SERÁN RESPONSABLES DE NINGÚN 
- *	RECLAMO, DAÑO U OTRA RESPONSABILIDAD, YA SEA EN UNA ACCIÓN DE CONTRATO, AGRAVIO O DE 
- *	OTRA MANERA, QUE SURJA DE, FUERA DE O EN CONEXIÓN CON EL SOFTWARE O EL USO U OTRO TIPO
- *	DE ACCIONES EN EL SOFTWARE.
- *	
- *	Además, cualquier modificación realizada por terceros se considerará propiedad del 
- *	titular original de los derechos de autor. Los titulares de derechos de autor 
- *	originales no se responsabilizan de las modificaciones realizadas por terceros.
- *	
- *	Queda explícitamente establecido que no es obligatorio especificar ni notificar los 
- *	cambios realizados entre versiones, ni revelar porciones específicas de código 
- *	modificado.
- */
-
 #include "CDirExplorer.h"
 
+int main() {
+    #ifdef _WIN32
+        SetConsoleOutputCP(CP_UTF8);
+        SetConsoleCP(CP_UTF8);
+    #endif
 
-int main(int argc, char **argv) {
+    const char* directory_path = ".";
+    ast_t* root = create_ast_from_directory(directory_path);
+    if (!root) {
+        fprintf(stderr, "Failed to create AST.\n");
+        exit(EXIT_FAILURE);
+    }
+
+    printf("AST Structure:\n");
+    print_ast_custom(root, 0);
+
+    // Ejemplo de búsqueda: en este caso se busca el archivo "ast.c"
+    // La ruta debe incluir el nombre del nodo raíz, por ejemplo: "./src/ast.c"
+    char* search_path = strdup("./src/CDirExplorer.c");
+    ast_t* found_node = search_node_by_route(search_path, root, get_node_name);
+    free(search_path);
+
+    if (found_node) {
+        printf("\nFound node: %s\n", get_node_name(found_node));
+    } else {
+        printf("\nNode not found\n");
+    }
+
+    free_ast_t(root, free_dir_entry);
+    //free_ast_recursive(root);
 
     puts("Exit...");
     return 0;
